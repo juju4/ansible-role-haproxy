@@ -25,3 +25,5 @@ haproxy_backend_servers: []
 
 # Extra global vars (see README for example usage).
 haproxy_global_vars: []
+
+haproxy_customlog: true

@@ -17,9 +17,18 @@ global
 defaults
   log global
   mode  http
+# https://www.haproxy.com/blog/introduction-to-haproxy-logging/
+# https://www.haproxy.com/documentation/hapee/latest/onepage/#8
+{% if not haproxy_customlog %}
   option  httplog
+{% elif haproxy_version is version('1.5', '<=') %}
+{# centos7/haproxy1.5: no HP, HQ, HM, no need to escape double quote. centos8/1.8 #}
+  log-format {"time":%Ts,"time_local":"%Tl","remote_addr":"%ci","request":"%r","status":%ST,"body_bytes_sent":%B,"ssl_version":"%sslv","ssl_ciphers":"%sslc","session_duration":"%Tt","termination_state":"%ts"}
+{% else %}
+  log-format {\"time\":%Ts,\"time_local\":\"%Tl\",\"remote_addr\":\"%ci\",\"request\":\"%r\",\"uri\":\"%HP\",\"query_parameters\":\"%HQ\",\"request_method\":\"%HM\",\"status\":%ST,\"body_bytes_sent\":%B,\"ssl_version\":\"%sslv\",\"ssl_ciphers\":\"%sslc\",\"session_duration\":\"%Tt\",\"termination_state\":\"%ts\"}
+{% endif %}
   option  dontlognull
-{% if haproxy_version == '1.4' %}
+{% if haproxy_version is version('1.4', '<=') %}
         contimeout 5000
         clitimeout 50000
         srvtimeout 50000
