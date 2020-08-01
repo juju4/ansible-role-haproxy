@@ -1,0 +1,12 @@
+---
+- name: Ensure rsyslog is installed.
+  package: name=rsyslog state=present
+
+- name: Ensure rsyslog has separate logs for haproxy
+  template:
+    src: "{{ haproxy_rsyslog_template | default('rsyslogd-haproxy.conf.j2') }}"
+    dest: /etc/rsyslog.d/haproxy.conf
+    mode: '0644'
+
+- name: Ensure rsyslog is started and enabled on boot.
+  service: name=rsyslog state=started enabled=yes
